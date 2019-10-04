@@ -8,24 +8,26 @@
  * 最后更改于2019/10/03
  */
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
 public class Main {
-    public static void main(String[] args){
+    public static void main(String[] args) {
         MainForm.main(null);
     }
 
-    static boolean createAndWriteTXT(ArrayList<String> text, String LOC){
+    static boolean createAndWriteTXT(ArrayList<String> text, String LOC) {
         File file = new File(LOC);
-        if(file.isFile()) return false;
+        if (file.isFile()) return false;
         else {
             try {
                 file.createNewFile();
                 FileWriter writer = new FileWriter(file, true);
-                for (String t: text) {
+                for (String t : text) {
                     writer.write(t);
                     writer.write("\n");
                 }
@@ -39,4 +41,16 @@ public class Main {
         }
         return false;
     }
+    public static String convertStringToHex(@NotNull String str){
+
+        char[] chars = str.toCharArray();
+
+        StringBuffer hex = new StringBuffer();
+        for(int i = 0; i < chars.length; i++){
+            hex.append("\\"+"u");
+            hex.append(Integer.toHexString((int)chars[i]));
+        }
+        return hex.toString();
+    }
+
 }
