@@ -1,0 +1,78 @@
+<html>
+<head>
+<title>MainForm.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #000080; font-weight: bold;}
+.s1 { color: #000000;}
+.s2 { color: #008000; font-weight: bold;}
+</style>
+</head>
+<body bgcolor="#ffffff">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#c0c0c0" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+MainForm.java</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span>javax.swing.*;
+
+<span class="s0">public class </span>MainForm {
+    <span class="s0">private </span>JPanel mainPanel;
+    <span class="s0">private </span>JTabbedPane tabbedPane1;
+    <span class="s0">private </span>JTextField textField1;
+    <span class="s0">private </span>JTree tree1;
+    <span class="s0">private </span>JRadioButton 是否需要父进度来解锁RadioButton;
+    <span class="s0">private </span>JTextPane textPane1;
+    <span class="s0">private </span>JTextField 模组ID物品IDTextField;
+    <span class="s0">private </span>JTextField textField2;
+    <span class="s0">private </span>JTextField textField3;
+    <span class="s0">private </span>JRadioButton 是否无需解锁前继进度即可见RadioButton;
+    <span class="s0">private </span>JRadioButton 是否以直线连接前继进度RadioButton;
+    <span class="s0">private </span>JRadioButton 普通RadioButton;
+    <span class="s0">private </span>JRadioButton 任务RadioButton;
+    <span class="s0">private </span>JRadioButton 挑战RadioButton;
+    <span class="s0">private </span>JRadioButton 左击方块RadioButton;
+    <span class="s0">private </span>JRadioButton 右击方块RadioButton;
+    <span class="s0">private </span>JTextField 方块IDTextField;
+    <span class="s0">private </span>JRadioButton 击杀生物RadioButton;
+    <span class="s0">private </span>JRadioButton 获取物品RadioButton;
+    <span class="s0">private </span>JRadioButton 合成物品RadioButton;
+    <span class="s0">private </span>JRadioButton 摧毁方块RadioButton;
+    <span class="s0">private </span>JTextField 手持物品IDTextField;
+    <span class="s0">private </span>JTextField 生物IDTextField;
+    <span class="s0">private </span>JButton 添加Button;
+    <span class="s0">private </span>JList eventList;
+    <span class="s0">private </span>JButton 生成进度Button;
+    <span class="s0">private </span>JRadioButton 是否隐藏与前继进度连线RadioButton;
+    <span class="s0">private </span>JRadioButton 完成时是否显示进度完成标识RadioButton;
+    <span class="s0">private </span>JRadioButton 完成时是否显示至聊天栏RadioButton;
+    <span class="s0">private </span>JTextField textField4;
+
+    <span class="s0">public </span>MainForm() {
+        ButtonGroup group = <span class="s0">new </span>ButtonGroup(){{
+            add(任务RadioButton);
+            add(挑战RadioButton);
+            add(普通RadioButton);
+        }};
+        普通RadioButton.setSelected(<span class="s0">true</span>);
+        ButtonGroup group2 = <span class="s0">new </span>ButtonGroup(){{
+            add(击杀生物RadioButton);
+            add(合成物品RadioButton);
+            add(右击方块RadioButton);
+            add(左击方块RadioButton);
+            add(摧毁方块RadioButton);
+            add(获取物品RadioButton);
+        }};
+    }
+
+    <span class="s0">public static void </span>main(String[] args) {
+        JFrame frame = <span class="s0">new </span>JFrame(<span class="s2">&quot;MainForm&quot;</span>);
+        frame.setContentPane(<span class="s0">new </span>MainForm().mainPanel);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.pack();
+        frame.setVisible(<span class="s0">true</span>);
+    }
+}
+</pre>
+</body>
+</html>
