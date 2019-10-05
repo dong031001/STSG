@@ -226,7 +226,7 @@ public class MainForm {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        JFrame frame = new JFrame("STSG -dong031001 -preAlpha-1");
+        JFrame frame = new JFrame("STSG -dong031001 Alpha-2");
         frame.setContentPane(new MainForm().mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();

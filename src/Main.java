@@ -14,6 +14,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Main {
     public static void main(String[] args) {
@@ -47,10 +49,18 @@ public class Main {
 
         StringBuffer hex = new StringBuffer();
         for(int i = 0; i < chars.length; i++){
-            hex.append("\\"+"u");
-            hex.append(Integer.toHexString((int)chars[i]));
+            if (isChinese(chars[i])) {
+                hex.append("\\" + "u");
+                hex.append(Integer.toHexString(chars[i]));
+            } else {
+                hex.append(chars[i]);
+            }
         }
         return hex.toString();
+    }
+
+    public static boolean isChinese(char c) {
+        return c >= 0x4E00 && c <= 0x9FA5;// 根据字节码判断
     }
 
 }
