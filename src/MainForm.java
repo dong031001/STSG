@@ -35,6 +35,7 @@ public class MainForm {
     private JTextField 进度文件夹路径文件名TextField;
     private JTextField 物品个数可留空TextField;
     private JRadioButton 是否一直隐藏RadioButton;
+    private JRadioButton 是否直接生成不显示确认信息RadioButton;
     private ArrayList<String> text;
     private ArrayList<String> eventListText;
     static int criteriaCount = 0;
@@ -77,7 +78,7 @@ public class MainForm {
                     int count = 1;
                     if(模组ID物品IDTextField1.getText().isEmpty()) throw new Exception();
                     text.add(critName + " = addCriteria(\"" + critName + "\", \"minecraft:inventory_changed\")");
-                    text.add(critName + ".addItem(<" + 模组ID物品IDTextField1.getText() + ">)");
+                    text.add(critName + ".addItem(" + 模组ID物品IDTextField1.getText() + ")");
                     if(!物品个数可留空TextField.getText().isEmpty()){
                         text.add(critName + ".setCount(" + 物品个数可留空TextField.getText() + ")");
                         count = Integer.parseInt(物品个数可留空TextField.getText());
@@ -124,13 +125,26 @@ public class MainForm {
 
             ArrayList<String> textClone = (ArrayList<String>) text.clone();
 
-            text.add("setIcon(<"+iconTextField.getText()+">)");
+            String icon = iconTextField.getText();
+            String[] temp = icon.split(",");
+            ArrayList<String> temp1 = new ArrayList<>();
+            for(String l : temp) if (!l.startsWith(" count") && !l.startsWith(" ore")) temp1.add(l);
+            temp = temp1.toArray(new String[temp1.size()]);
+            String te = String.join(",",temp);
+            if (!te.endsWith(">")) te = te+">";
+            text.add("setIcon("+te+")");
+
             text.add("setTitle(\""+Main.convertStringToHex(textField1.getText())+"\")");
             text.add("setDescription(\""+Main.convertStringToHex(进度描述ASCIITextPane.getText())+"\")");
             text.add("setPos("+textField2.getText()+","+textField3.getText()+")");
 
             String[] parents;
             parents = 进度文件夹路径文件名TextField.getText().split(";");
+
+            if(parents.length==0||eventListText.size()==0){
+                JOptionPane.showMessageDialog(mainPanel, "无父进度或触发条件，请重试");
+                return;
+            }
 
             for (String path:parents) {
                 text.add("addParent(\""+path+"\")");
@@ -181,8 +195,10 @@ public class MainForm {
                     null,
                     "在生成前预览进度文件",
                     "确认",
-                    JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION){
-
+                    JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION
+                    &&
+                    !是否直接生成不显示确认信息RadioButton.isSelected()
+            ){
                 JFrame frame = new JFrame("预览");
                 PreviewForm previewForm = new PreviewForm();
                 previewForm.list1.setListData(text.toArray());
@@ -226,7 +242,7 @@ public class MainForm {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        JFrame frame = new JFrame("STSG -dong031001 Alpha-2");
+        JFrame frame = new JFrame("STSG -dong031001 Alpha-3");
         frame.setContentPane(new MainForm().mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
@@ -242,6 +258,7 @@ public class MainForm {
         eventListText.add(t);
         eventList.setListData(eventListText.toArray());
     }
+
     private void end(ArrayList<String> textClone){
         if(Main.createAndWriteTXT(text, fileNameTextField.getText()+".txt")){
             JOptionPane.showMessageDialog(null, "成功生成进度");
