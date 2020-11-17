@@ -1,6 +1,8 @@
+import event.*;
+
 import javax.swing.*;
-import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainForm {
     private JPanel mainPanel;
@@ -27,6 +29,7 @@ public class MainForm {
     private JTextField 生物IDTextField;
     private JButton 添加Button;
     private JList eventList;
+    private ArrayList<AbstractEvent> abstractEventList = new ArrayList<>();
     private JButton 生成进度Button;
     private JRadioButton 是否隐藏与父进度连线RadioButton;
     private JRadioButton 完成时是否显示进度完成标识RadioButton;
@@ -36,8 +39,10 @@ public class MainForm {
     private JTextField 物品个数可留空TextField;
     private JRadioButton 是否一直隐藏RadioButton;
     private JRadioButton 是否直接生成不显示确认信息RadioButton;
+    private JButton 移除事件Button;
     private ArrayList<String> text;
     private ArrayList<String> eventListText;
+    private ArrayList<AbstractEvent> abstractEvents;
     static int criteriaCount = 0;
 
     public MainForm() {
@@ -65,83 +70,127 @@ public class MainForm {
             add(获取物品RadioButton);
         }};
         获取物品RadioButton.setSelected(true);
+
         添加Button.addActionListener(e ->{
             String critName = getNewCriteriaName();
             try {
+                /**
+                 if (击杀生物RadioButton.isSelected()) {
+                 if(生物IDTextField.getText().isEmpty()) throw new Exception();
+                 text.add(critName + " = addCriteria(\"" + critName + "\", \"minecraft:player_killed_entity\")");
+                 text.add(critName + ".setEntityType(\"" + 生物IDTextField.getText() + "\")");
+                 addStringToEventList("击杀"+生物IDTextField.getText());
+                 }
+                 else if (获取物品RadioButton.isSelected()) {
+                 int count = 1;
+                 if(模组ID物品IDTextField1.getText().isEmpty()) throw new Exception();
+                 text.add(critName + " = addCriteria(\"" + critName + "\", \"minecraft:inventory_changed\")");
+                 text.add(critName + ".addItem(" + 模组ID物品IDTextField1.getText() + ")");
+                 if(!物品个数可留空TextField.getText().isEmpty()){
+                 text.add(critName + ".setCount(" + 物品个数可留空TextField.getText() + ")");
+                 count = Integer.parseInt(物品个数可留空TextField.getText());
+                 }
+                 addStringToEventList("获取物品"+模组ID物品IDTextField1.getText()+count+"个");
+                 }
+                 else if (右击方块RadioButton.isSelected()) {
+                 if(模组ID方块物品IDTextField.getText().isEmpty()) throw new Exception();
+                 text.add(critName + " = addCriteria(\"" + critName + "\", \"triumph:right_click_block\")");
+                 text.add(critName + ".setBlock(<" + 模组ID方块物品IDTextField.getText() + ">)");
+                 addStringToEventList("右击"+模组ID方块物品IDTextField.getText());
+                 }
+                 else if (合成物品RadioButton.isSelected()) {
+                 int count = 1;
+                 if(模组ID物品IDTextField1.getText().isEmpty()) throw new Exception();
+                 text.add(critName + " = addCriteria(\"" + critName + "\", \"triumph:player_crafted_item\")");
+                 text.add(critName + ".addItem(<" + 模组ID物品IDTextField1.getText() + ">)");
+                 if(!物品个数可留空TextField.getText().isEmpty()){
+                 text.add(critName + ".setCount(" + 物品个数可留空TextField.getText() + ")");
+                 count = Integer.parseInt(物品个数可留空TextField.getText());
+                 }
+                 addStringToEventList("合成"+count+"个"+模组ID物品IDTextField1.getText());
+                 }
+                 else if(左击方块RadioButton.isSelected()){
+                 if(模组ID方块物品IDTextField.getText().isEmpty()) throw new Exception();
+                 text.add(critName + " = addCriteria(\"" + critName + "\", \"triumph:left_click_block\")");
+                 text.add(critName + ".setBlock(<" + 模组ID方块物品IDTextField.getText() + ">)");
+                 addStringToEventList("左击"+模组ID方块物品IDTextField.getText());
+                 }
+                 else if(摧毁方块RadioButton.isSelected()){
+                 if(模组ID方块物品IDTextField.getText().isEmpty()) throw new Exception();
+                 text.add(critName + " = addCriteria(\"" + critName + "\", \"triumph:player_destroy_block\")");
+                 text.add(critName + ".setBlock(<" + 模组ID方块物品IDTextField.getText() + ">)");
+                 addStringToEventList("摧毁"+模组ID方块物品IDTextField.getText());
+                 }
+                 **/
+                AbstractEvent event = null;
+                boolean adding = true;
+                int count = 物品个数可留空TextField.getText().equals("") ? 1 : Integer.parseInt(物品个数可留空TextField.getText());
                 if (击杀生物RadioButton.isSelected()) {
-                    if(生物IDTextField.getText().isEmpty()) throw new Exception();
-                    text.add(critName + " = addCriteria(\"" + critName + "\", \"minecraft:player_killed_entity\")");
-                    text.add(critName + ".setEntityType(\"" + 生物IDTextField.getText() + "\")");
-                    addStringToEventList("击杀"+生物IDTextField.getText());
+                    if (生物IDTextField.getText().isEmpty()) throw new Exception();
+                    event = new KillEntityEvent(生物IDTextField.getText());
+                } else if (获取物品RadioButton.isSelected()) {
+                    if (模组ID物品IDTextField1.getText().isEmpty()) throw new Exception();
+                    event = new HarvestItemEvent(模组ID物品IDTextField1.getText(), count);
+                } else if (右击方块RadioButton.isSelected()) {
+                    if (模组ID方块物品IDTextField.getText().isEmpty()) throw new Exception();
+                    event = new RightClickBlockEvent(模组ID方块物品IDTextField.getText());
+                } else if (合成物品RadioButton.isSelected()) {
+                    if (模组ID物品IDTextField1.getText().isEmpty()) throw new Exception();
+                    event = new CraftItemEvent(模组ID物品IDTextField1.getText(), count);
+                } else if (左击方块RadioButton.isSelected()) {
+                    if (模组ID方块物品IDTextField.getText().isEmpty()) throw new Exception();
+                    event = new LeftClickBlockEvent(模组ID方块物品IDTextField.getText());
+                } else if (摧毁方块RadioButton.isSelected()) {
+                    if (模组ID方块物品IDTextField.getText().isEmpty()) throw new Exception();
+                    event = new HarvestBlockEvent(模组ID方块物品IDTextField.getText());
+                } else {
+                    adding = false;
                 }
-                else if (获取物品RadioButton.isSelected()) {
-                    int count = 1;
-                    if(模组ID物品IDTextField1.getText().isEmpty()) throw new Exception();
-                    text.add(critName + " = addCriteria(\"" + critName + "\", \"minecraft:inventory_changed\")");
-                    text.add(critName + ".addItem(" + 模组ID物品IDTextField1.getText() + ")");
-                    if(!物品个数可留空TextField.getText().isEmpty()){
-                        text.add(critName + ".setCount(" + 物品个数可留空TextField.getText() + ")");
-                        count = Integer.parseInt(物品个数可留空TextField.getText());
-                    }
-                    addStringToEventList("获取物品"+模组ID物品IDTextField1.getText()+count+"个");
+                if (adding) {
+                    abstractEventList.add(event);
+                    //text.addAll(event.serialize());
+                    addStringToEventList(event.toString());
                 }
-                else if (右击方块RadioButton.isSelected()) {
-                    if(模组ID方块物品IDTextField.getText().isEmpty()) throw new Exception();
-                    text.add(critName + " = addCriteria(\"" + critName + "\", \"triumph:right_click_block\")");
-                    text.add(critName + ".setBlock(<" + 模组ID方块物品IDTextField.getText() + ">)");
-                    addStringToEventList("右击"+模组ID方块物品IDTextField.getText());
-                }
-                else if (合成物品RadioButton.isSelected()) {
-                    int count = 1;
-                    if(模组ID物品IDTextField1.getText().isEmpty()) throw new Exception();
-                    text.add(critName + " = addCriteria(\"" + critName + "\", \"triumph:player_crafted_item\")");
-                    text.add(critName + ".addItem(<" + 模组ID物品IDTextField1.getText() + ">)");
-                    if(!物品个数可留空TextField.getText().isEmpty()){
-                        text.add(critName + ".setCount(" + 物品个数可留空TextField.getText() + ")");
-                        count = Integer.parseInt(物品个数可留空TextField.getText());
-                    }
-                    addStringToEventList("合成"+count+"个"+模组ID物品IDTextField1.getText());
-                }
-                else if(左击方块RadioButton.isSelected()){
-                    if(模组ID方块物品IDTextField.getText().isEmpty()) throw new Exception();
-                    text.add(critName + " = addCriteria(\"" + critName + "\", \"triumph:left_click_block\")");
-                    text.add(critName + ".setBlock(<" + 模组ID方块物品IDTextField.getText() + ">)");
-                    addStringToEventList("左击"+模组ID方块物品IDTextField.getText());
-                }
-                else if(摧毁方块RadioButton.isSelected()){
-                    if(模组ID方块物品IDTextField.getText().isEmpty()) throw new Exception();
-                    text.add(critName + " = addCriteria(\"" + critName + "\", \"triumph:player_destroy_block\")");
-                    text.add(critName + ".setBlock(<" + 模组ID方块物品IDTextField.getText() + ">)");
-                    addStringToEventList("摧毁"+模组ID方块物品IDTextField.getText());
-                }
-            }catch (Exception exception){
-                JOptionPane.showMessageDialog(null,"添加事件失败，通常是因为在必填ID内未填入信息");
+
+
+            } catch (Exception exception) {
+                JOptionPane.showMessageDialog(null, "添加事件失败，通常是因为在必填ID内未填入信息");
                 System.out.println(exception);
             }
         });
 
+        移除事件Button.addActionListener(e -> {
+            int index = eventList.getSelectedIndex();
+            eventListText.remove(index);
+            abstractEventList.remove(index);
+            eventList.setListData(eventListText.toArray());
+        });
 
-        生成进度Button.addActionListener(e->{
+
+        生成进度Button.addActionListener(e -> {
+
+            for (AbstractEvent event : abstractEventList) text.addAll(event.serialize());
 
             ArrayList<String> textClone = (ArrayList<String>) text.clone();
 
             String icon = iconTextField.getText();
             String[] temp = icon.split(",");
             ArrayList<String> temp1 = new ArrayList<>();
-            for(String l : temp) if (!l.startsWith(" count") && !l.startsWith(" ore")) temp1.add(l);
+            for (String l : temp) if (!l.startsWith(" count") && !l.startsWith(" ore")) temp1.add(l);
             temp = temp1.toArray(new String[temp1.size()]);
-            String te = String.join(",",temp);
-            if (!te.endsWith(">")) te = te+">";
-            text.add("setIcon("+te+")");
+            String te = String.join(",", temp);
+            if (!te.startsWith("<")) te = "<" + te;
+            if (!te.endsWith(">")) te = te + ">";
+            text.add("setIcon(" + te + ")");
 
-            text.add("setTitle(\""+Main.convertStringToHex(textField1.getText())+"\")");
-            text.add("setDescription(\""+Main.convertStringToHex(进度描述ASCIITextPane.getText())+"\")");
-            text.add("setPos("+textField2.getText()+","+textField3.getText()+")");
+            text.add("setTitle(\"" + Main.convertStringToHex(textField1.getText()) + "\")");
+            text.add("setDescription(\"" + Main.convertStringToHex(进度描述ASCIITextPane.getText()) + "\")");
+            text.add("setPos(" + textField2.getText() + "," + textField3.getText() + ")");
 
             String[] parents;
             parents = 进度文件夹路径文件名TextField.getText().split(";");
 
-            if(parents.length==0||eventListText.size()==0){
+            if (parents.length == 0 || eventListText.size() == 0) {
                 JOptionPane.showMessageDialog(mainPanel, "无父进度或触发条件，请重试");
                 return;
             }
@@ -169,17 +218,15 @@ public class MainForm {
                 text.add("drawDirectLines(true)");
             }
 
-            if(完成时是否显示进度完成标识RadioButton.isSelected()){
+            if (完成时是否显示进度完成标识RadioButton.isSelected()) {
                 text.add("setShowToast(true)");
-            }
-            else{
+            } else {
                 text.add("setShowToast(false)");
             }
 
-            if(完成时是否显示至聊天栏RadioButton.isSelected()){
+            if (完成时是否显示至聊天栏RadioButton.isSelected()) {
                 text.add("setAnnounceToChat(true)");
-            }
-            else{
+            } else {
                 text.add("setAnnounceToChat(false)");
             }
 
@@ -188,7 +235,6 @@ public class MainForm {
             }else if(挑战RadioButton.isSelected()){
                 text.add("setFrameType(\"CHALLENGE\")");
             }
-
 
 
             if(JOptionPane.showConfirmDialog(
@@ -231,7 +277,6 @@ public class MainForm {
             }
 
 
-
         });
 
     }
@@ -242,7 +287,7 @@ public class MainForm {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        JFrame frame = new JFrame("STSG -dong031001 Alpha-3");
+        JFrame frame = new JFrame("STSG -dong031001 Alpha-4");
         frame.setContentPane(new MainForm().mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
@@ -260,14 +305,13 @@ public class MainForm {
     }
 
     private void end(ArrayList<String> textClone){
-        if(Main.createAndWriteTXT(text, fileNameTextField.getText()+".txt")){
+        if (Main.createAndWriteTXT(text, fileNameTextField.getText() + ".txt")) {
             JOptionPane.showMessageDialog(null, "成功生成进度");
             text.clear();
             text.add("//This file is generated by STSG, illegal changes may cause severe consequences.");
             eventListText.clear();
             eventList.setListData(eventListText.toArray());
-        }
-        else {
+        } else {
             JOptionPane.showMessageDialog(null, "生成进度失败，大部分情况下是由目录下同名文件引起的");
             text = textClone;
         }
